@@ -1,0 +1,45 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>Image Transform</PageTitle>
+
+
+<div class="page">
+
+    <NavBar ChangeModeEvent=@CallJsFunction
+            BackgroundColor="var(--body-color)"
+            Title="Image Transform"
+            PathMode=@pathMode
+            PathImg="icon/icon.svg"
+            TextColor="var(--text-color)" />
+
+    <div class="home">
+        @Body
+    </div>
+
+
+</div>
+
+@code {
+    string pathMode { get; set; } = "icon/darkmode.svg";
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    private async Task CallJsFunction()
+    {
+        try
+        {
+            bool isDarkMode = await JSRuntime.InvokeAsync<bool>("ChangeMode");
+            if (isDarkMode)
+                pathMode = "icon/lightmode.svg";
+            else
+                pathMode = "icon/darkmode.svg";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+}

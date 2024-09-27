@@ -1,0 +1,62 @@
+﻿@page "/"
+@inherits HomePageModel
+
+<div class="container" style="padding:1rem;">
+
+    <Title FontSize="30" Text="All the tools you need to edit your images efficiently" TextColor="var(--text-color)"></Title>
+    <h4 style="font-weight:200; text-align:center;color:var(--text-color);">Your online photo editor remains free, with no limits!</h4>
+    <Space />
+    <Space/>
+    <div style="display:flex; gap:10px;">
+
+        <div style="width:100%;">
+            <Label Text="Search" TextColor="var(--text-color)" />
+
+            <SearchBar TextColor="var(--text-color)"
+                       BackgroundColor="var(--sidebar-color)"
+                       BorderColor="var(--text-color)"
+                       ValueChanged=OnSearch />
+
+        </div>
+
+        <div style="width:100%;">
+            <Label Text="Category" TextColor="var(--text-color)" />
+            <SelectInput TextColor="var(--text-color)" ValueChanged=@OnChangeCategory TItem="string">
+                <option value="-1">Tous</option>
+                @foreach (var col in GUI_APP.categories)
+                {
+                    <option value=@col.Id>@col.Name</option>
+                }
+            </SelectInput>
+        </div>
+    </div>
+    <Space />
+    @if (IsBusy)
+    {
+        <div style="display:flex; justify-content:center; align-items:center;">
+            <Spiner PrimaryColor="var(--primary-color)" />
+        </div>
+
+    }
+    else
+    {
+
+        @foreach (var modules in _groupedShows)
+        {
+            <Grid Items="@modules.Value" TItem="BAL_Module" MaxColumns="2">
+                <ItemTemplate Context="item">
+                    <Navigate Path=@item.Path NavigateEvent=OnNavigateCard>
+                        <ItemTemplate>
+                            <Cards Icon=@item.Icon
+                                   Title=@item.Title
+                                   Author=@($"{item.Visit} views")
+                                   Description=@item.Description
+                                   BackgroundColor="#ffffff" />
+                        </ItemTemplate>
+                    </Navigate>
+                </ItemTemplate>
+                <EmptyResults></EmptyResults>
+            </Grid>
+        }
+    }
+</div>

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="LibraryComponent">
+	    <HintPath>..\..\..\librarycomponent\LibraryComponent\bin\Debug\net7.0\LibraryComponent.dll</HintPath>
+	  </Reference>
+	  <Reference Include="LibraryLogs">
+	    <HintPath>..\..\..\librarylogs\LibraryLogs\LibraryLogs\bin\Debug\net7.0\LibraryLogs.dll</HintPath>
+	  </Reference>
+	  <Reference Include="LibraryServiceImageTransform">
+	    <HintPath>..\LibraryServiceImageTransform\bin\Debug\net8.0\LibraryServiceImageTransform.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+	
+</Project>

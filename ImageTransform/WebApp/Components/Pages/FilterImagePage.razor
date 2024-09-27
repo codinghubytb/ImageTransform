@@ -1,0 +1,72 @@
+﻿@page "/filter"
+@inherits FilterPageModel
+
+<Center BackgroundColor="Transparent" >
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper" >
+
+                        <ImageContainer SrcImage=@Result.image SrcIconDelete="icon/delete.svg" OnDelete=@DeleteImage
+                                        Blur=@(ConvertSharpBlurToCss(ValueRangeBlur))
+                                        GrayScale=@GrayScale
+                                        Invert=@Invert/>
+
+                        <Card1 Title="Filter Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="var(--primary-color-light)"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage
+                               DisabledButton=@Disabled>
+                            <ItemTemplate>
+                                <div style="display:flex; flex-direction: column; width:100%;gap:50px;">
+                                    <div style="width:100%;">
+                                        <Label Text="Filter" />
+                                        <SelectInput TItem="string" @bind-Value=@Filter>
+                                            <ChildContent>
+                                                @foreach(string filter in FilterList)
+                                                {
+                                                    <option value=@filter.ToLower()>@filter</option>
+                                                }
+                                            </ChildContent>
+                                        </SelectInput>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(Filter))
+                                    {
+                                        @if (Filter.Equals("blur"))
+                                        {
+                                            <div>
+                                                <Label Text="Blur Intensity" />
+                                                <RangeInput Title="Blur" @bind-Value=@ValueRangeBlur Max="200" Min="3" />
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload />
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner PrimaryColor="var(--primary-color)"/>
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Center>
+
+

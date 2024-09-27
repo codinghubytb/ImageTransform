@@ -1,0 +1,65 @@
+﻿@page "/convert"
+@inherits ConvertPageModel
+
+<Center BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+                        <ImageContainer SrcImage=@Result.image SrcIconDelete="icon/delete.svg" OnDelete=@DeleteImage />
+                        
+                        <Card1 Title="Convert Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="var(--primary-color-light)"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage>
+                            <ItemTemplate>
+                                <div class="content-format">
+                                    <div style="width: 100%;">
+
+                                        <Label Text="From" />
+                                        <SelectInput TItem="string" @bind-Value=@FromExtension>
+                                            <ChildContent>
+                                                <option value=@FromExtension.ToLower()>@FromExtension.ToUpper()</option>
+                                            </ChildContent>
+                                        </SelectInput>
+                                    </div>
+                                    <img src="icon/switch.svg" width="32" height="32" />
+                                    <div style="width: 100%;">
+
+                                        <Label Text="To" />
+                                        <SelectInput TItem="string" @bind-Value=@ToExtension>
+                                            <ChildContent>
+                                                @foreach (BAL_Extension value in ToExtensions)
+                                                {
+                                                    <option value=@value.Name.ToLower()>@value.Name.ToUpper()</option>
+                                                }
+                                            </ChildContent>
+                                        </SelectInput>
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload />
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner PrimaryColor="var(--primary-color)" />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Center>

@@ -1,0 +1,47 @@
+﻿@page "/rotate"
+@inherits RotatePageModel
+
+<Center BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+                        <ImageContainer SrcImage=@Result.image SrcIconDelete="icon/delete.svg" OnDelete=@DeleteImage Rotate=@Angle
+                        WidthImage="80" HeightImage="80"/>
+                        <Card1 Title="Rotate Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="var(--primary-color-light)"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage>
+                            <ItemTemplate>
+                                <div style="display:flex;width:100%;gap:10px;">
+                                    <div style="width:100%;">
+                                        <Label Text="Angle of rotation (deg)" />
+                                        <NumberInput @bind-Value=@Angle Max="360" Min="-360" />
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload/>
+                    if(IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Center>

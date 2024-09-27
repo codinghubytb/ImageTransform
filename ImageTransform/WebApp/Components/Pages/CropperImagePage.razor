@@ -1,0 +1,274 @@
+﻿@page "/cropper"
+
+<style>
+    .upload-box {
+        cursor: pointer;
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .upload-box img {
+            object-fit: contain;
+            border-radius: 5px;
+        }
+
+    .crop-area {
+        position: absolute;
+        box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.5); /* Ombre autour pour l'effet visuel */
+         }
+</style>
+
+<Center BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper>
+            <ItemTemplate>
+                @if (!string.IsNullOrEmpty(imageDataUrl))
+                {
+                    <div id="myDiv" class="upload-box" style="height:225px; max-width: 100%;">
+                        <img src=@imageDataUrl alt="" style="width:@($"{widthContainer}px"); max-height:225px; max-width:100%;">
+                        <div class="crop-area" style="width:@($"{widthContainer}px"); height:100%; max-height:225px; max-width:100%;">
+                            <div style="position:absolute; left: @($"{leftcrop}px");
+                              top: @($"{topcrop}px");
+                              width: 500px;
+                              height: @($"{heightcrop}px") background:#ff0000;"></div>
+                        </div>
+                    </div>
+                    <Space />
+                    <hr />
+                    <Space />
+                    <div style="display:flex; justify-content:center; align-items:end;gap:10px;">
+                        <div>
+                            <Label Text="Width" />
+                            <NumberInput @bind-Value=@Width />
+                        </div>
+                        <div>
+                            <Label Text="Height" />
+                            <NumberInput @bind-Value=@Height />
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:center; align-items:end;gap:10px;">
+                        <div>
+                            <Label Text="Left" />
+                            <NumberInput @bind-Value=@Left />
+                        </div>
+                        <div>
+                            <Label Text="Top" />
+                            <NumberInput @bind-Value=@Top />
+                        </div>
+                    </div>
+                    <Space />
+                    <CheckBoxInput Label="Compression ?" @bind-Value=@IsCompression />
+                    <Space />
+                    <Button Text="Download" BackgroundColor="var(--primary-color)" ClickEvent=@OnDownload TextColor="#fff" />
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload />
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Center>
+
+@code {
+
+    [Inject]
+    public IJSRuntime JS { get; set; }
+
+    [Inject]
+    public WebService WebService { get; set; }
+
+    IBrowserFile file;
+    int widthContainer=225;
+    int heightContainer = 225;
+    int widthImage;
+    int heightImage;
+    float widthRatio;
+    float heightRatio;
+    string base64Data;
+    private int width = 50;
+    private int height = 50;
+    private int top = 0;
+    private int left = 0;
+
+    private int leftcrop = 0;
+    private int topcrop = 0;
+    private int widthcrop = 0;
+    private int heightcrop = 0;
+    private bool IsCompression { get; set; }
+
+    public int Width
+    {
+        get => width;
+        set
+        {
+            width = value;
+            widthcrop = (int)((value * widthContainer) / widthImage); // Diviser par widthRatio pour ajuster au bon ratio
+            StateHasChanged();
+        }
+    }
+    public int Height
+    {
+        get => height;
+        set
+        {
+            height = value;
+            heightcrop = (int)((value * heightContainer)/heightImage); // Diviser par heightRatio pour ajuster au bon ratio
+            StateHasChanged();
+        }
+    }
+    public int Left
+    {
+        get => left;
+        set
+        {
+            left = value;
+            leftcrop = (int)((value * widthContainer)/widthImage); // Diviser par widthRatio pour ajuster au bon ratio
+            StateHasChanged();
+        }
+    }
+
+
+    // Référence de l'instance actuelle du composant
+    private static CropperImagePage _instance;
+    public int Top
+    {
+        get => top;
+        set
+        {
+            top = value;
+            topcrop = (int)((value * heightContainer) / heightImage); // Diviser par heightRatio pour ajuster au bon ratio
+            StateHasChanged();
+        }
+    }
+    private string imageDataUrl;
+
+    // Constructeur
+    public CropperImagePage()
+    {
+        // Stocker l'instance du composant courant
+        _instance = this;
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        const long maxFileSize = 1024 * 1024 * 15; // 15 Mo
+
+        try
+        {
+            file = e.File;
+
+            // Vérifiez la taille du fichier avant de continuer
+            if (file.Size > maxFileSize)
+            {
+                throw new InvalidOperationException("La taille du fichier dépasse la limite autorisée.");
+            }
+
+            // Utilisez OpenReadStream avec RemoteJSDataStream pour lire les fichiers volumineux
+            using (var stream = file.OpenReadStream(maxFileSize)) // Limite de taille
+            {
+                var buffer = new byte[file.Size];
+                var bytesRead = 0;
+                var chunkSize = 4096;
+
+                while (bytesRead < file.Size)
+                {
+                    var read = await stream.ReadAsync(buffer, bytesRead, Math.Min(chunkSize, (int)(file.Size - bytesRead)));
+                    if (read == 0)
+                        break;
+
+                    bytesRead += read;
+                }
+
+                // Convertir les données du fichier en URL de données
+                base64Data = Convert.ToBase64String(buffer, 0, bytesRead);
+                imageDataUrl = $"data:{file.ContentType};base64,{base64Data}";
+            }
+
+            // Appel à la fonction JavaScript avec l'image base64 pour obtenir les dimensions
+            var dimensions = await JS.InvokeAsync<int[]>("getImageDimensionsFromBase64", imageDataUrl);
+
+            // Mise à jour des dimensions de l'image
+            widthImage = dimensions[0];
+            heightImage = dimensions[1];
+
+
+            widthContainer = (int)((widthImage * 225) / heightImage);
+
+            Width = (int)(widthImage * 0.25);
+            Left = (int)(widthImage * 0.25);
+            Height = (int)(heightImage * 0.25);
+            Top = (int)(heightImage * 0.25);
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message); // Log the error for debugging purposes
+        }
+    }
+
+    // Méthode statique appelée par JS Interop
+    [JSInvokable]
+    public static Task OnBrowserResize(int width, int height)
+    {
+        // Vérifie si l'instance existe et appelle la méthode d'instance
+        _instance?.HandleResize(width, height);
+        return Task.CompletedTask;
+    }
+
+    // Méthode d'instance qui met à jour l'état du composant
+    private async void HandleResize(int width, int height)
+    {
+        int widthDiv = await JS.InvokeAsync<int>("getDivWidth", "myDiv");
+        if(widthImage > heightImage)
+        {
+            widthContainer = widthDiv;
+            heightContainer = (int)((widthContainer * heightImage) / widthImage);
+            if(heightContainer > 225)
+            {
+                heightContainer = 225;
+                widthContainer = (int)((widthImage * 225) / heightImage);
+            }
+            Width = Width;
+            Left = Left;
+            Height = Height;
+            Top = Top;
+            Console.WriteLine($"{topcrop}, {widthcrop}, {heightcrop},{leftcrop}");
+            // Width = width;
+            // Left = Left;
+            // Height = (int)((Width * heightImage) / widthImage);
+            // Top = Top;
+        }
+
+        // Forcer la mise à jour de l'interface utilisateur
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnDownload()
+    {
+        // if (IsCompression)
+        //     Compression();
+
+        // // Envoyer les informations à votre service Web pour effectuer le recadrage
+        // var result = await WebService.SendImageForCropping(base64Data, Left, Top, Width, Height, file.ContentType.Replace("image/", ""));
+
+        // if (result.ContainsKey("image") && !string.IsNullOrEmpty(result["image"]))
+        // {
+        //     // Téléchargement de l'image recadrée
+        //     await JS.InvokeVoidAsync("downloadImage", result["image"], $"{Guid.NewGuid()}.{file.ContentType.Replace("image/", "")}");
+        // }
+    }
+    private async void Compression()
+    {
+        // var data = await WebService.SendImageForCompression(base64Data, 90, file.ContentType.Replace("image/", ""));
+        // base64Data = data["base64Data"];
+        // imageDataUrl = data["image"];
+
+    }
+
+}

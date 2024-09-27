@@ -1,0 +1,62 @@
+﻿@page "/resize"
+@inherits ResizePageModel
+
+<Center BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+                        <ImageContainer SrcImage=@Result.image SrcIconDelete="icon/delete.svg" OnDelete=@DeleteImage
+                                        WidthImage=@WidthImageResult HeightImage=@HeightImageResult 
+                                        ObjectFitOptions=ObjectFitOptions.Fill/>
+                        <Card1 Title="Rotate Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="var(--primary-color-light)"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage>
+                            <ItemTemplate>
+                                <div style="display:flex; width: 100%; flex-wrap: wrap;  align-items:center; gap:10px;">
+                                    <div style="display:flex; width: 100%; gap:10px;">
+                                        <CheckBoxInput Label="Default ?" @bind-Value=@IsDefault />
+                                        <CheckBoxInput Label="Proportionnel ?" @bind-Value=@IsProportional />
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <Label Text="Width" />
+                                        <div style="display:flex; width: 100%; align-items: end; gap: 10px;">
+                                            <NumberInput @bind-Value=@Width/>
+                                            <Label Text="px" />
+                                        </div>
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <Label Text="Height" />
+                                        <div style="display:flex; width: 100%; align-items: end; gap: 10px;">
+                                            <NumberInput @bind-Value=@Height />
+                                            <Label Text="px" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload/>
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Center>
