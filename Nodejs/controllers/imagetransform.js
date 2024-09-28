@@ -88,13 +88,7 @@ async function Cropper(req, res) {
       return res.status(400).json({ error: 'Left, top, width, et height doivent être des nombres.' });
     }
 
-    if(iscompression){
-      const imageBuffer = await sharp(req.file.buffer).extract({ left, top, width, height }).toBuffer();
-
-    }else{
-      const imageBuffer = await sharp(req.file.buffer).jpeg({ quality: 100 }).resize(width, height).toBuffer();
-
-    }
+    const imageBuffer = await sharp(req.file.buffer).extract({ left, top, width, height }).toBuffer();
  
     res.set('Content-Type', req.file.mimetype);
     res.json(createResponse(imageBuffer.toString('base64'),  req.file.mimetype.split('/')[1], null));
@@ -102,9 +96,8 @@ async function Cropper(req, res) {
     console.error('Erreur lors du recadrage de l\'image:', error);
     res.status(500).json(createResponse(null, null, 'Erreur lors du recadrage de l\'image'));
   }
-}
+}*/
 
-*/
 // Fonction pour faire pivoter l'image
 async function Rotate(req, res) {
   try {
@@ -212,9 +205,6 @@ async function Watermark(req, res) {
 }
 
 
-
-
-
 const applyBlurFilter = (image, intensity) => {
   return image.blur(intensity);
 };
@@ -283,7 +273,6 @@ function createResponse(base64Data, extension, error = null) {
 module.exports = {
   Convert,
   Resize,
-  /*Cropper,*/
   Rotate,
   Compression,
   Filter,
