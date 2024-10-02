@@ -1,5 +1,6 @@
-﻿using LibraryServiceImageTransform.Models;
+﻿
 using Microsoft.AspNetCore.Components.Forms;
+using WebApp.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebApp.Components.PageModels
@@ -84,13 +85,13 @@ namespace WebApp.Components.PageModels
             switch (Filter)
             {
                 case "grayscale":
-                    result = await WebService.SendImageForFilterGrayScale(Result.base64Data, IsCompression, Result.format);
+                    result = await ModuleService.SendImageForFilterGrayScale(Result.base64Data, IsCompression, Result.format);
                     break;
                 case "invert":
-                    result = await WebService.SendImageForFilterInvert(Result.base64Data, IsCompression, Result.format);
+                    result = await ModuleService.SendImageForFilterInvert(Result.base64Data, IsCompression, Result.format);
                     break;
                 case "blur":
-                    result = await WebService.SendImageForFilterBlur(Result.base64Data, ValueRangeBlur / 10, IsCompression, Result.format);
+                    result = await ModuleService.SendImageForFilterBlur(Result.base64Data, ValueRangeBlur / 10, IsCompression, Result.format);
                     break;
             }
 

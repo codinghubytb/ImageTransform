@@ -154,7 +154,7 @@ namespace WebApp.Components.PageModels
             if (IsCompression)
                 Result = await Compression(Result);
 
-            var result = await WebService.SendImageForResizing(Result.base64Data, Width, Height, IsCompression, Result.format);
+            var result = await ModuleService.SendImageForResizing(Result.base64Data, Width, Height, IsCompression, Result.format);
 
             if (!string.IsNullOrEmpty(result.error))
                 Error = result.error;

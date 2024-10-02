@@ -1,4 +1,4 @@
-﻿using LibraryServiceImageTransform.Services;
+﻿
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace WebApp.Components.PageModels
@@ -56,7 +56,7 @@ namespace WebApp.Components.PageModels
             if (IsCompression)
                 Result = await Compression(Result);
 
-            var result = await WebService.SendImageForCompression(Result.base64Data, Quality, Result.format);
+            var result = await ModuleService.SendImageForCompression(Result.base64Data, Quality, Result.format);
 
             if (!string.IsNullOrEmpty(result.error))
                 Error = result.error;

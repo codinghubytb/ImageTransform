@@ -1,7 +1,8 @@
 ﻿using LibraryLogs;
-using LibraryServiceImageTransform.Services;
+using librarymongodb.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using WebApp.Services;
 
 namespace WebApp.Components.PageModels
 {
@@ -9,6 +10,9 @@ namespace WebApp.Components.PageModels
     {
         [Inject]
         public WebService? WebService { get; set; }
+
+        [Inject]
+        public ModuleService? ModuleService { get; set; }
 
         [Inject]
         public GUI_APP? GUI_APP { get; set; }

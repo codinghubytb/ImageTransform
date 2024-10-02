@@ -1,8 +1,9 @@
-using LibraryServiceImageTransform.Services;
+using librarymongodb.Services;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http.Features;
 using WebApp;
 using WebApp.Components;
+using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,19 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 #endif
 
 // Register WebService
-builder.Services.AddScoped<WebService>();
+builder.Services.AddScoped(sp =>
+{
+    string database = builder.Configuration["Connection:Database"].ToString();
+    HttpClient httpClient = new HttpClient { BaseAddress = new Uri(builder.Configuration["Connection:Debug"].ToString()) };
+    return new WebService(database, httpClient);
+});
+
+// Register ModuleService
+builder.Services.AddScoped(sp =>
+{
+    HttpClient httpClient = new HttpClient { BaseAddress = new Uri(builder.Configuration["Connection:DebugApiModule"].ToString()) };
+    return new ModuleService(httpClient);
+});
 builder.Services.AddSingleton<GUI_APP>();
 
 var app = builder.Build();

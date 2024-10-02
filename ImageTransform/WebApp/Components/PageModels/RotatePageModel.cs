@@ -1,8 +1,8 @@
-﻿using LibraryServiceImageTransform.Services;
+﻿
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using LibraryServiceImageTransform.Models;
+
 
 namespace WebApp.Components.PageModels
 {
@@ -58,7 +58,7 @@ namespace WebApp.Components.PageModels
             if (IsCompression)
                 Result = await Compression(Result);
 
-            var result = await WebService.SendImageForRotate(Result.base64Data, Angle, IsCompression, Result.format);
+            var result = await ModuleService.SendImageForRotate(Result.base64Data, Angle, IsCompression, Result.format);
 
             if(!string.IsNullOrEmpty(result.error))
                 Error = result.error;

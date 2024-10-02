@@ -17,8 +17,8 @@
 	  <Reference Include="LibraryLogs">
 	    <HintPath>..\..\..\librarylogs\LibraryLogs\LibraryLogs\bin\Debug\net7.0\LibraryLogs.dll</HintPath>
 	  </Reference>
-	  <Reference Include="LibraryServiceImageTransform">
-	    <HintPath>..\LibraryServiceImageTransform\bin\Debug\net8.0\LibraryServiceImageTransform.dll</HintPath>
+	  <Reference Include="librarymongodb">
+	    <HintPath>..\..\..\librarymongodb\librarymongodb\librarymongodb\bin\Debug\net8.0\librarymongodb.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 	

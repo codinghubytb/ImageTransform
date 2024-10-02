@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
-using LibraryServiceImageTransform.Models;
-using LibraryServiceImageTransform.Services;
-using LibraryLogs; // Assuming you have a logging library
+
+
+using LibraryLogs;
+using librarymongodb.Models; // Assuming you have a logging library
 
 namespace WebApp.Components.PageModels
 {
@@ -134,7 +135,7 @@ namespace WebApp.Components.PageModels
                 try
                 {
                     Logger?.Info("Chargement des extensions.");
-                    var extensions = await WebService.GetAllExtension();
+                    var extensions = await WebService.GetExtensions();
                     if (extensions != null)
                         GUI_APP.extensions = extensions;
                 }

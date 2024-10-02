@@ -1,6 +1,7 @@
-﻿using LibraryServiceImageTransform.Models;
+﻿
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
+using WebApp.Models;
 
 namespace WebApp.Components.PageModels
 {
@@ -73,7 +74,7 @@ namespace WebApp.Components.PageModels
 
         public async Task<BAL_Result> Compression(BAL_Result result)
         {
-            return await WebService.SendImageForCompression(result.base64Data, 90, result.format);
+            return await ModuleService.SendImageForCompression(result.base64Data, 90, result.format);
         }
 
         public virtual void DeleteImage()

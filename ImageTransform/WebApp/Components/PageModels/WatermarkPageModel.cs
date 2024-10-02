@@ -1,7 +1,8 @@
 ﻿using LibraryComponent.Enums;
-using LibraryServiceImageTransform.Models;
+
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
+using WebApp.Models;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApp.Components.PageModels
@@ -80,7 +81,7 @@ namespace WebApp.Components.PageModels
             if (IsCompression)
                 Result = await Compression(Result);
 
-            BAL_Result result = await WebService.SendImageForWatermark(Result.base64Data, ResultWatermark.base64Data,
+            BAL_Result result = await ModuleService.SendImageForWatermark(Result.base64Data, ResultWatermark.base64Data,
                 PositionWatermark.ToString().ToLower(), 0.2, 1, Result.format, ResultWatermark.format);
 
             if (!string.IsNullOrEmpty(result.error))

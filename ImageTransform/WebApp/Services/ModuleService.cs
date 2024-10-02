@@ -1,5 +1,5 @@
-﻿using LibraryServiceImageTransform.Models;
-using Microsoft.VisualBasic;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,94 +8,78 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using WebApp.Models;
 
-namespace LibraryServiceImageTransform.Services
+namespace WebApp.Services
 {
-    public class WebService : HttpService
+    public class ModuleService
     {
-        /// <summary>
-        /// Initializes a new instance of the WebService class with a default HttpClient and API URL.
-        /// </summary>
-        public WebService(HttpClient httpClient) : base(httpClient)
+        protected HttpClient HttpClient { get; set; }
+
+        public ModuleService(HttpClient httpClient)
         {
+            HttpClient = httpClient;
         }
 
-        /// <summary>
-        /// Retrieves a list of all modules from the API.
-        /// </summary>
-        /// <returns>A list of BAL_Module objects if the request is successful; otherwise, null.</returns>
-        public async Task<List<BAL_Module>> GetModulesByType(string idType)
+        protected async Task<BAL_Result> SendImageForOperation(string path, string base64Image, 
+            string extension, Dictionary<string, string> additionalParams, string base64Watermark = null, 
+            string watermarkExtension = null)
         {
             try
             {
-                var modules = await HttpResponse_GET<BAL_Module>($"api/modules-by-type?type={idType}");
-                return modules;
+                // Convert Base64 to a byte array
+                byte[] imageBytes = Convert.FromBase64String(base64Image);
+
+                using (var content = new MultipartFormDataContent())
+                {
+                    // Add the image as binary file content
+                    var imageContent = new ByteArrayContent(imageBytes);
+                    imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"image/{extension}");
+                    content.Add(imageContent, "image", $"image.{extension}");
+
+                    // If watermark is provided, add it to the request
+                    if (base64Watermark != null && watermarkExtension != null)
+                    {
+                        // Convert Base64 to a byte array
+                        byte[] watermarkBytes = Convert.FromBase64String(base64Watermark);
+                        var watermarkContent = new ByteArrayContent(watermarkBytes);
+                        watermarkContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"image/{watermarkExtension}");
+                        content.Add(watermarkContent, "watermark", $"watermark.{watermarkExtension}");
+                    }
+
+                    // Add additional parameters
+                    foreach (var param in additionalParams)
+                    {
+                        content.Add(new StringContent(param.Value.ToString()), param.Key);
+                    }
+
+                    // Send the POST request to the respective operation endpoint
+                    var response = await HttpClient.PostAsync(path, content);
+
+                    // Process the response
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonResponse = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<BAL_Result>(jsonResponse);
+                    }
+                    else
+                    {
+                        return new BAL_Result()
+                        {
+                            error = "Error : Loading Image Transform"
+                        };
+                    }
+                }
             }
             catch (Exception ex)
             {
-                return null;
+                return new BAL_Result()
+                {
+                    error = "Error : Loading Image Transform"
+                };
             }
         }
 
-        /// <summary>
-        /// Retrieves a list of all categories from the API.
-        /// </summary>
-        /// <returns>A list of BAL_Category objects if the request is successful; otherwise, null.</returns>
-        public async Task<List<BAL_Category>> GetAllCategory()
-        {
-            try
-            {
-                return await HttpResponse_GET<BAL_Category>("api/categorys");
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves a list of all extensions from the API.
-        /// </summary>
-        /// <returns>A list of BAL_Extension objects if the request is successful; otherwise, null.</returns>
-        public async Task<List<BAL_Extension>> GetAllExtension()
-        {
-            try
-            {
-                return await HttpResponse_GET<BAL_Extension>("api/extensions");
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves a list of all types from the API.
-        /// </summary>
-        /// <returns>A list of BAL_Type objects if the request is successful; otherwise, null.</returns>
-        public async Task<List<BAL_Type>> GetAllType()
-        {
-            try
-            {
-                return await HttpResponse_GET<BAL_Type>("api/types");
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public async Task<HttpResponseMessage> UpdateModule(BAL_Module module)
-        {
-            try
-            {
-                return await HttpResponse_PUT<BAL_Module>("api/module-update", module);
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
-        }
 
         public async Task<BAL_Result> SendImageForCropping(string base64Image, int left, int top, int width, int height, bool isCompression, string extension)
         {
@@ -149,6 +133,7 @@ namespace LibraryServiceImageTransform.Services
                                 { "blurIntensity", blurIntensity.ToString().Replace(",", ".") }
                             });
         }
+    
         public async Task<BAL_Result> SendImageForFilterInvert(string base64Image, bool isCompression, string extension)
         {
             return await SendImageForOperation("imagetransform/filter",
@@ -160,6 +145,7 @@ namespace LibraryServiceImageTransform.Services
                                 { "iscompression", isCompression.ToString() }
                             });
         }
+       
         public async Task<BAL_Result> SendImageForFilterBrightness(string base64Image, double brightnessLevel, bool isCompression, string extension)
         {
             return await SendImageForOperation("imagetransform/filter",
@@ -172,6 +158,7 @@ namespace LibraryServiceImageTransform.Services
                                 { "brightnessLevel", brightnessLevel.ToString().Replace(",", ".") }
                             });
         }
+  
         public async Task<BAL_Result> SendImageForFilterGrayScale(string base64Image, bool isCompression, string extension)
         {
             return await SendImageForOperation("imagetransform/filter",

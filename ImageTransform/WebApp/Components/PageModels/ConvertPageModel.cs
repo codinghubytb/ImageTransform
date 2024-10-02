@@ -1,5 +1,5 @@
-﻿using LibraryServiceImageTransform.Models;
-using LibraryServiceImageTransform.Services;
+﻿using librarymongodb.Models;
+
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace WebApp.Components.PageModels
@@ -37,7 +37,7 @@ namespace WebApp.Components.PageModels
                     ToExtension = ToExtensions.FirstOrDefault().Name;
                     if(Result.format.Equals("jpeg") && file.Size > 1024 * 1024 * 0.5)
                     {
-                        Result = await WebService.SendImageForCompression(Result.base64Data, 10, FromExtension);
+                        Result = await ModuleService.SendImageForCompression(Result.base64Data, 10, FromExtension);
                     }
                 }
             }
@@ -60,7 +60,7 @@ namespace WebApp.Components.PageModels
             if (IsCompression)
                 Result = await Compression(Result);
 
-            var result = await WebService.SendImageForConverting(Result.base64Data, ToExtension, false, Result.format);
+            var result = await ModuleService.SendImageForConverting(Result.base64Data, ToExtension, false, Result.format);
 
             Logger.Info(result.image);
 
