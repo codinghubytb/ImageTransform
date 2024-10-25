@@ -1,0 +1,87 @@
+﻿@rendermode InteractiveAuto
+
+<NavBar BackgroundColor="var(--body-color)" Title="CH Studio" PathIcon="icon/icon.svg" TextColor="var(--text-color)">
+    <ItemTemplate>
+        <Icon ChangeEvent="@ToggleReporting" PathImg="icon/report.svg" />
+        <Icon ChangeEvent="@ToggleMode" PathImg="@pathMode" />
+    </ItemTemplate>
+</NavBar>
+
+<Modal IsVisible="@isVisibleReporting">
+    <ChildContent>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                <div style="display: flex; justify-content: space-between; align-items:center;">
+                    <Title Text="Reporting" />
+                    <Button Icon="icon/close.svg" ClickEvent="@ToggleReporting" Width="Auto" />
+                </div>
+                <Space />
+                <Label Text="Problem Path" TextColor="var(--text-color)" />
+                <TextInput Placeholder="Path" @bind-Value="@_reporting.Path" Disabled="true" />
+                <Space />
+                <Label Text="Message" TextColor="var(--text-color)" />
+                <TextareaInput @bind-Value="@_reporting.Description" Placeholder="Message Problem..." Row="3" FontSize="16px" Maxlength="2000"/>
+                <Space />
+                <p style="color:red">@errorMessage</p>
+                <Button Text="Send" Width="100%" BackgroundColor="var(--primary-color)" TextColor="white" ClickEvent="@SaveReport" />
+            </ItemTemplate>
+        </Wrapper>
+    </ChildContent>
+</Modal>
+
+@if (isSaveSuccessful)
+{
+    <SnackBar Message="Message sent!" Status="success" Position="tc" />
+}
+
+@code {
+    private string pathMode = "icon/darkmode.svg";
+    private string errorMessage;
+    private bool isVisibleReporting;
+    private bool isSaveSuccessful;
+    private BAL_Reporting _reporting;
+
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private WebService WebService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _reporting = new BAL_Reporting { Path = NavigationManager.Uri };
+    }
+
+    private async Task ToggleMode()
+    {
+        bool isDarkMode = await JSRuntime.InvokeAsync<bool>("ChangeMode");
+        pathMode = isDarkMode ? "icon/lightmode.svg" : "icon/darkmode.svg";
+        StateHasChanged();
+    }
+
+    private void ToggleReporting() => isVisibleReporting = !isVisibleReporting;
+
+    private async Task SaveReport()
+    {
+        if (string.IsNullOrWhiteSpace(_reporting?.Description))
+        {
+            errorMessage = "Please, fill in the fields";
+            return;
+        }
+
+        var response = await WebService.CreateReporting(_reporting);
+        isSaveSuccessful = response.IsSuccessStatusCode;
+
+        if (isSaveSuccessful)
+        {
+            errorMessage = string.Empty;
+            isVisibleReporting = false; 
+            StateHasChanged();
+            await Task.Delay(3000);
+            isSaveSuccessful = false;
+        }
+        else
+        {
+            errorMessage = "Something went wrong. Please try again later.";
+        }
+        StateHasChanged();
+    }
+}

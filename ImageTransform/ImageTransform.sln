@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "WebApp\WebApp.csproj", "{7DA56ACD-B6EF-4D24-A57F-0BA85C7EE22E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAutoApp", "WebAutoApp\WebAutoApp\WebAutoApp.csproj", "{21A4995F-0E83-45A8-A09E-1952BD1024DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAutoApp.Client", "WebAutoApp\WebAutoApp.Client\WebAutoApp.Client.csproj", "{36D9532D-0B89-4A99-B71E-E2C75468B152}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7DA56ACD-B6EF-4D24-A57F-0BA85C7EE22E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DA56ACD-B6EF-4D24-A57F-0BA85C7EE22E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DA56ACD-B6EF-4D24-A57F-0BA85C7EE22E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DA56ACD-B6EF-4D24-A57F-0BA85C7EE22E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21A4995F-0E83-45A8-A09E-1952BD1024DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21A4995F-0E83-45A8-A09E-1952BD1024DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21A4995F-0E83-45A8-A09E-1952BD1024DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21A4995F-0E83-45A8-A09E-1952BD1024DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36D9532D-0B89-4A99-B71E-E2C75468B152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36D9532D-0B89-4A99-B71E-E2C75468B152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36D9532D-0B89-4A99-B71E-E2C75468B152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36D9532D-0B89-4A99-B71E-E2C75468B152}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

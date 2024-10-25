@@ -1,0 +1,58 @@
+﻿@page "/compression"
+@inherits CompressorPageModel
+@rendermode InteractiveAuto
+
+<Position BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+
+                        <ContainerWithOverlay SrcIconOverlay="icon/delete.svg" OverlayEvent=@DeleteImage
+                                        TitleOverlay="Delete">
+                            <Content>
+                                <div style="width: 100%; height: 100%; display: flex; justify-content:center; align-items: center;">
+                                    <img src=@Result.image
+                                         style="width: 100%;height: 100%;position: relative;object-fit: contain;" />
+                                </div>
+                            </Content>
+                        </ContainerWithOverlay>
+
+                        <Card1 Title="Compression Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="#fff"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage>
+                            <ItemTemplate>
+                                <div style="display:flex;width:100%;gap:10px;">
+                                    <div style="width:100%;">
+                                        <Label Text="Quality (%)" />
+                                        <NumberInput @bind-Value=@Quality Max="100" Min="1" />
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload />
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Position>
+

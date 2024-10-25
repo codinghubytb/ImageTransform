@@ -1,0 +1,85 @@
+﻿@page "/filter"
+@inherits FilterPageModel
+@rendermode InteractiveAuto
+
+<Position BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+
+                        <ContainerWithOverlay SrcIconOverlay="icon/delete.svg" OverlayEvent=@DeleteImage
+                                        TitleOverlay="Delete">
+                            <Content>
+                                <div style="width: 100%; height: 100%; display: flex; justify-content:center; align-items: center;">
+                                    <img src=@Result.image
+                                         style="width: 100%;
+                                                height: 100%;
+                                                position: relative;
+object-fit: contain;
+                                                filter : blur(@($"{ConvertSharpBlurToCss(ValueRangeBlur)}px"))
+                                                         @(Filter.Equals("invert") ? " invert(100%) " : "")
+                                                         @(Filter.Equals("grayscale") ? " grayscale(100%) " : "");" />
+                                </div>
+                            </Content>
+                        </ContainerWithOverlay>
+
+
+                        <Card1 Title="Filter Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="#fff"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage
+                               DisabledButton=@Disabled>
+                            <ItemTemplate>
+                                <div style="display:flex; flex-direction: column; width:100%;gap:50px;">
+                                    <div style="width:100%;">
+                                        <Label Text="Filter" />
+                                        <SelectInput TValue="string" @bind-Value=@Filter>
+                                            <ChildContent>
+                                                @foreach (string filter in FilterList)
+                                                {
+                                                    <option value=@filter.ToLower()>@filter</option>
+                                                }
+                                            </ChildContent>
+                                        </SelectInput>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(Filter))
+                                    {
+                                        @if (Filter.Equals("blur"))
+                                        {
+                                            <div>
+                                                <Label Text="Blur Intensity" />
+                                                <RangeInput Title="Blur" @bind-Value=@ValueRangeBlur Max="200" Min="3" />
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload />
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner Color="var(--primary-color)" />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Position>
+
+

@@ -1,0 +1,73 @@
+﻿@page "/"
+@inherits HomePageModel
+@rendermode InteractiveAuto
+
+<div class="container" style="padding:1rem;">
+
+    <Title FontSize="30" Text="All the tools you need to edit your images efficiently" TextColor="var(--text-color)"></Title>
+    <h4 style="font-weight:200; text-align:center;color:var(--text-color);">Your online photo editor remains free, with no limits!</h4>
+    <Space />
+    <Space />
+    <div style="display:flex; gap:10px;">
+
+        <div style="width:100%;">
+            <Label Text="Search" TextColor="var(--text-color)" />
+
+            <TextInput TextColor="var(--text-color)" BackgroundColor="var(--sidebar-color)"
+                       BorderColor="var(--text-color)" InputEvent=@OnSearch Placeholder="Search ..." />
+
+        </div>
+
+        @if (_categories.Count() > 1)
+        {
+            <div style="width:100%;">
+                <Label Text="Category" TextColor="var(--text-color)" />
+                <SelectInput TextColor="var(--text-color)" ValueChanged=@OnChangeCategory TValue="string">
+                    <option value="-1">Tous</option>
+                    @foreach (var col in _categories)
+                    {
+                        <option value=@col.Id>@col.Name</option>
+                    }
+                </SelectInput>
+            </div>
+        }
+    </div>
+    <Space />
+    @if (IsBusy)
+    {
+        <div style="display:flex; flex-direction: column; justify-content:center; align-items:center;">
+            <Label Text="Loading data ..." TextColor="var(--text-color)" />
+            <Spiner Color="var(--primary-color)" />
+        </div>
+
+    }
+    else
+    {
+
+        @foreach (var modules in _groupedShows)
+        {
+            <Grid Items="@modules.Value" TItem="BAL_Module" MaxColumns="3">
+                <ItemTemplate Context="item">
+                    <Navigate Path=@item.Path NavigateEvent=OnNavigateCard>
+                        <ItemTemplate>
+                            <Cards Icon=@item.Icon
+                                   Title=@item.Title
+                                   SubTitle=@($"{item.Visit} views")
+                                   BackgroundColor="#ffffff"
+                                   Indication=@(item.DateCreated > DateTime.Now.AddMonths(-1) ? "New" : string.Empty)
+                                   TextColorIndicator=@(item.DateCreated > DateTime.Now.AddMonths(-1) ? "var(--primary-color)" : string.Empty)
+                                   BorderColorIndicator=@(item.DateCreated > DateTime.Now.AddMonths(-1) ? "var(--primary-color)" : string.Empty)
+                                   BackgroundColorIndicator="transparent">
+                                <ItemTemplate>
+                                    <small>@item.Description</small>
+                                </ItemTemplate>
+                            </Cards>
+                        </ItemTemplate>
+                    </Navigate>
+                </ItemTemplate>
+                <EmptyResults></EmptyResults>
+            </Grid>
+        }
+        <Space NumberSpace="5" />
+    }
+</div>

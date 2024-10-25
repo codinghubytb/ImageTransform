@@ -1,0 +1,96 @@
+﻿@page "/cropper"
+@inherits CropperPageModel
+@rendermode InteractiveAuto
+
+<Position BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+                        <ContainerWithOverlay SrcIconOverlay="icon/delete.svg" OverlayEvent=@DeleteImage
+                                              TitleOverlay="Delete">
+                            <Content>
+                                <div style="position: relative; width: 100%; height: auto;">
+                                    <img src=@Result.image
+                                         style="width: 100%; height: auto; object-fit: contain; display: block;" />
+
+                                    <!-- Crop frame overlay -->
+                                    <div style="position: absolute; border: 2px dashed #ff0000; pointer-events: none;
+                        left: @Left%; top: @Top%; width: @Width%; height: @Height%;
+                        box-sizing: border-box;"></div>
+                                </div>
+                            </Content>
+                        </ContainerWithOverlay>
+
+                        <Card1 Title="Cropper Image"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="#fff"
+                               DownloadEventCallBack=@OnDownload
+                               CloseEventCallBack=@DeleteImage>
+                            <ItemTemplate>
+                                <div style="display:flex; width: 100%; flex-wrap: wrap;  align-items:center; gap:10px;">
+                                    <Content>
+                                        <ItemTemplate>
+                                            <div style="width: 100%;">
+                                                <Label Text="Width" />
+                                                <div style="display:flex; width: 100%; align-items: end; gap: 10px;">
+                                                    <NumberInput @bind-Value=@Width UpdateOnInput Max="WidthDefault" />
+                                                    <Label Text="%" />
+                                                </div>
+                                            </div>
+                                            <div style="width: 100%;">
+                                                <Label Text="Height" />
+                                                <div style="display:flex; width: 100%; align-items: end; gap: 10px;">
+                                                    <NumberInput @bind-Value=@Height UpdateOnInput Max="HeightDefault" />
+                                                    <Label Text="%" />
+                                                </div>
+                                            </div>
+                                        </ItemTemplate>
+
+                                    </Content>
+                                    <Content>
+                                        <ItemTemplate>
+                                            <div style="width: 100%;">
+                                                <Label Text="Left" />
+                                                <div style="display:flex; width: 100%; align-items: end; gap: 10px;">
+                                                    <NumberInput @bind-Value=@Left UpdateOnInput Max="WidthDefault - Width" />
+                                                    <Label Text="%" />
+                                                </div>
+                                            </div>
+                                            <div style="width: 100%;">
+                                                <Label Text="Top" />
+                                                <div style="display:flex; width: 100%; align-items: end; gap: 10px;">
+                                                    <NumberInput @bind-Value=@Top UpdateOnInput Max="HeightDefault - Height" />
+                                                    <Label Text="%" />
+                                                </div>
+                                            </div>
+                                        </ItemTemplate>
+
+                                    </Content>
+                                    
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload />
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner Color="var(--primary-color)" />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Position>

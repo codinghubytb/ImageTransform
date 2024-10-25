@@ -1,0 +1,74 @@
+﻿/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    /* ===== Colors ===== */
+    --body-color: #fafcfd; /*#E4E9F7;*/
+    --sidebar-color: #FFF;
+    --primary-color: #00C853;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #333;
+    /* ====== Transition ====== */
+    --tran-03: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.3s ease;
+}
+
+
+body {
+    margin: 0;
+    height: 100%;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    overflow: hidden;
+}
+
+::selection {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+body.dark {
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+}
+
+.page {
+    display: grid;
+    grid-template-areas:
+        "header"
+        "main-view";
+    grid-template-columns: 1fr;
+    grid-template-rows: 70px 1fr;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    height: 100vh;
+    /*overflow:hidden;*/
+}
+
+
+.home {
+    background-color: var(--body-color);
+    grid-area: main-view;
+    width: 100%;
+    transition: var(--tran-05);
+    min-height: calc(100vh - 70px);
+    background-position: center center;
+    background-size: cover;
+    background-image: url('/icon/back.svg');
+    overflow: auto;
+}

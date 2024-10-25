@@ -1,0 +1,54 @@
+﻿@page "/convert-to-jpg"
+@inherits ConvertPageModel
+@rendermode InteractiveAuto
+
+<Position BackgroundColor="Transparent">
+    <ItemTemplate>
+        <Wrapper MaxWidth="1100">
+            <ItemTemplate>
+                @if (!IsBusy && file != null)
+                {
+                    <div class="contentWrapper">
+                        <ContainerWithOverlay SrcIconOverlay="icon/delete.svg" OverlayEvent=@DeleteImage
+                                        TitleOverlay="Delete">
+                            <Content>
+                                <div style="width: 100%; height: 100%; display: flex; justify-content:center; align-items: center;">
+                                    <img src=@Result.image
+                                         style="width: 100%;height: 100%;position: relative;object-fit: contain;" />
+                                </div>
+                            </Content>
+                        </ContainerWithOverlay>
+
+                        <Card1 Title="Convert To Jpg"
+                               TitleButton="Download"
+                               Error=@Error
+                               IconCloseSrc="icon/close.svg"
+                               BackgroundColorButton="var(--primary-color)"
+                               TextColorButton="#fff"
+                               DownloadEventCallBack=@OnDownloadToJpg
+                               CloseEventCallBack=@DeleteImage>
+                            <ItemTemplate>
+                                <div style="display: flex; flex-direction: column; width: 100%;">
+                                <Label Text="To" />
+                                    <TextInput Value="JPG" Disabled />
+                                </div>
+                            </ItemTemplate>
+                        </Card1>
+                    </div>
+                }
+                else
+                {
+                    <FileInput TextColor="var(--text-color)" ValueChanged=@HandleImageUpload AcceptedFileTypes=".png, .webp, .tiff, .raw, .avif, .gif" />
+                    if (IsBusy)
+                    {
+                        <div style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                            <Spiner Color="var(--primary-color)" />
+                            <Label Text="Loading ..." />
+                        </div>
+                    }
+                    <p style="color : red">@Error</p>
+                }
+            </ItemTemplate>
+        </Wrapper>
+    </ItemTemplate>
+</Position>
